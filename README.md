@@ -25,23 +25,29 @@ The pipeline takes a raw image, segments the garment from the background, extrac
 
 The pipeline consists of four modular stages:
 
-[ Raw Image Input ]
-        │
-        ▼
-[ Preprocessing & Segmentation ] ──► Resizing (224x224 RGB) + GrabCut Foreground Extraction
-        │
-        ├────────────────────────────────────────┬────────────────────────────────────────┐
-        ▼                                        ▼                                        ▼
-[ Color Attribute Extraction ]          [ Classical Baseline ]                    [ Deep Learning ]
-K-Means Clustering (k=3)                HOG (Orientations=8, 16x16)               ResNet18 (ImageNet Pretrained)
-  └─► Dominant HEX / RGB                  + LBP (Uniform, r=2, points=16)           └─► Custom Head (FC -> 256 -> 10)
-                                          └─► RBF SVM (C=10.0)                      └─► CrossEntropyLoss + Adam
-        │                                        │                                        │
-        └────────────────────────────────────────┴────────────────────────────────────────┘
-                                                 │
-                                                 ▼
-                                     [ Unified JSON Output ]
-                             Category, Confidence, Color (HEX/RGB), Latency
+```text
++-------------------+
+|  Raw Image Input  |
++---------+---------+
+          |
+          v
++------------------------------------------+
+| Preprocessing & GrabCut Segmentation     |
++----+-------------------+-----------------+
+     |                   |                 |
+     v                   v                 v
++-----------------+ +-----------------+ +-----------------+
+| Color Attribute | | Classical CV    | | Deep Learning   |
+| K-Means (k=3)   | | HOG + LBP + SVM | | ResNet18 Head   |
++--------+--------+ +--------+--------+ +--------+--------+
+         |                   |                   |
+         +-------------------+-------------------+
+                             |
+                             v
+                  +---------------------+
+                  | Unified JSON Output |
+                  +---------------------+
+```
 
 ### A. Preprocessing & Foreground Segmentation
 1. Uniform resizing to 224 x 224 pixels in RGB color space.
