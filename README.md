@@ -73,11 +73,11 @@ The pipeline consists of four modular stages:
 ## 4. Experimental Results
 
 Both models were evaluated on the same 20% validation split:
-
+```text
 | Model               | Accuracy   | Macro F1 | Avg Latency       |
 | **SVM (HOG + LBP)** | 60.00%     | 0.46     | ~221 ms (CPU)     |
 | **ResNet18**        | **78.85%** | **0.76** | **~107 ms (GPU)** |
-
+```
 ### Failure Analysis
 * Skew toward T-Shirts: Because T-Shirt is the most frequent class in the dataset, the network tends to predict T-Shirt when it is uncertain.
 * Shirt vs. Longsleeve: Longsleeves are confused with Shirts (18 cases) because both have long sleeves and a similar shape when laid flat.
